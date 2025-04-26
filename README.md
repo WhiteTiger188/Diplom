@@ -1,38 +1,32 @@
-# Процедура запуска автотестов.
+# Инструкция для запуска автотестирования
 ## ПО для запуска автотестов:
 
-* IntelliJ IDEA 2024.2.5 (Ultimate Edition).
-* Java Development Kit (JDK) 11.
-* Docker Desktop.
-* 
+* IntelliJ IDEA
+* Google Chrome
+* Docker Desktop
+* GitHub
+
 ## Шаги:
 Открыть скопированный проект в IDEA, выполнить команды:
 
-1.	docker-compose up   - для запуска контейнера c MySQL, с PostgreSQL и Эмулятором банковского сервиса.
+1.	Запустить контейнеры СУБД MySQl, PostgerSQL и Node.js командой в терминале:
+      docker-compose up
 
-2.	В терминале запустить приложение aqa-shop.jar:
+2.	Запустить SUT в терминале при помощи команды:
+* для MySQL:
+java "-Dspring.datasource.url=jdbc:mysql://localhost:3306/app" -jar artifacts/aqa-shop.jar
 
-*	Для тестирования запросов в БД MySQL команда java -jar ./artifacts/aqa-shop.jar
-*	Для тестирования запросов в БД PostgreSQL
-     java -Dspring.datasource.url=jdbc:postgresql://localhost:5432/db
+* для PostgreSQL:
+java "-Dspring.datasource.url=jdbc:postgresql://localhost:5432/app" -jar artifacts/aqa-shop.jar
 
--Dspring.datasource.username=app
+3. Проверить работоспособность системы. Приложение должно быть доступно по адресу:
+http://localhost:8080/
 
--Dspring.datasource.password=pass -jar aqa-shop.jar.
-
-Возможно, в windows потребуется добавить кавычки:
-
-java "-Dspring.datasource.url=jdbc:postgresql://localhost:5432/db"
-
-"-Dspring.datasource.username=app"
-
-"-Dspring.datasource.password=pass" -jar aqa-shop.jar
-
-3. Для запуска автотестов:
+4. Для запуска автотестов:
 
 * Для БД MySQL в командной строке выполнить команду ./gradlew test
 
-* Для БД PostgreSQL  в командной строке выполнить команду  ./gradlew test -Ddb.url=jdbc:postgresql://localhost:5432/db.
+* Для БД PostgreSQL  в командной строке выполнить команду  ./gradlew test -Ddb.url=jdbc:postgresql://localhost:5432/app.
 
 
-4. Для получения отчета по результатам прогона автотестов дважды нажать ctrl выполнить команду gradle allureServe, отчет откроется в браузере.
+5. Для получения отчета по результатам прогона автотестов дважды нажать ctrl выполнить команду gradle allureServe, отчет откроется в браузере.
