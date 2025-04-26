@@ -1,55 +1,65 @@
 package ru.netology.data;
 
-import com.github.javafaker.Faker;
-import lombok.Data;
-import lombok.Value;
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import java.util.Random;
+import java.sql.SQLException;
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.util.Properties;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.FileInputStream;
 
+import lombok.SneakyThrows;
 public class DataHelper {
-    private static final Faker faker = new Faker(new Locale("en"));
-
+    private static final QueryRunner QUERY_RUNNER = new QueryRunner();
     private DataHelper() {
     }
+    private static Connection getConn() throws SQLException {
+        Properties props = new Properties();
+        try (InputStream input = new FileInputStream("application.properties")){
+        props.load(input);
+        return DriverManager.getConnection(props.getProperty("db.url"), props.getProperty("db.username"), props.getProperty("db.password"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    @SneakyThrows
+    public static String getStatusPayment() {
+        var status = "SELECT status FROM payment_entity ORDER BY created DESC LIMIT 1";
+        var conn = getConn();
+        return QUERY_RUNNER.query(conn, status, new ScalarHandler<String>());
 
-    public static String getApprovedCardNumber() {
-        return "4444 4444 4444 4441";
+    }
+    @SneakyThrows
+    public static String getStatusCredit() {
+        var status = "SELECT status FROM credit_request_entity ORDER BY created DESC LIMIT 1";
+        var conn = getConn();
+        return QUERY_RUNNER.query(conn, status, new ScalarHandler<String>());
+
+    }
+        @SneakyThrows
+        public static String getStatusOrderCredit() {
+            var id = "SELECT credit_id FROM order_entity ORDER BY created DESC LIMIT 1";
+            var conn = getConn();
+            return QUERY_RUNNER.query(conn, id, new ScalarHandler<String>());
     }
 
-    public static String getDeclinedCardNumber() {
-        return "4444 4444 4444 4442";
-    }
+    @SneakyThrows
+    public static String getStatusOrderPayment() {
+        var id = "SELECT payment_id FROM order_entity ORDER BY created DESC LIMIT 1";
+        var conn = getConn();
+        return QUERY_RUNNER.query(conn, id, new ScalarHandler<String>());
 
-    public static String getRandomCardNumber() {
-        return faker.business().creditCardNumber();
     }
-
-    public static String generateMonth(int shift) {
-        var date = LocalDate.now().plusMonths(shift).format(DateTimeFormatter.ofPattern("MM"));
-        return date;
-    }
-
-    public static String generateYear(int shift) {
-        var date = LocalDate.now().plusYears(shift).format(DateTimeFormatter.ofPattern("yy"));
-        return date;
-    }
-
-    public static String generateOwner(String locale) {
-        var faker = new Faker(new Locale(locale));
-        return faker.name().lastName() + " " + faker.name().firstName();
-    }
-
-    public static String generateCVC() {
-        var faker = new Faker(new Locale("en"));
-        return faker.numerify("###");
-    }
-
-    public static String generateInvalidCVC() {
-        var faker = new Faker(new Locale("en"));
-        return faker.numerify("##");
+   @SneakyThrows
+   public static void cleanDB() {
+       var connection = getConn();
+       QUERY_RUNNER.execute(connection, "DELETE FROM credit_request_entity");
+       QUERY_RUNNER.execute(connection, "DELETE FROM payment_entity");
+       QUERY_RUNNER.execute(connection, "DELETE FROM order_entity");
     }
 
 }
