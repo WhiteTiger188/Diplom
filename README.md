@@ -24,9 +24,9 @@ http://localhost:8080/
 
 4. Для запуска автотестов:
 
-* Для БД MySQL в командной строке выполнить команду ./gradlew test
+* Для БД MySQL в командной строке выполнить команду ./gradlew test -Ddb.url=jdbc:mysql://localhost:3306/app
 
-* Для БД PostgreSQL  в командной строке выполнить команду  ./gradlew test -Ddb.url=jdbc:postgresql://localhost:5432/app.
+* Для БД PostgreSQL  в командной строке выполнить команду  ./gradlew test -Ddb.url=jdbc:postgresql://localhost:5432/app
 
 
 5. Для получения отчета по результатам прогона автотестов дважды нажать ctrl выполнить команду gradle allureServe, отчет откроется в браузере.
