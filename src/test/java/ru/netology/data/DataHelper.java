@@ -21,7 +21,6 @@ public class DataHelper {
         try (InputStream input = new FileInputStream("application.properties")){
         props.load(input);
         return DriverManager.getConnection(System.getProperty("db.url"), props.getProperty("db.username"), props.getProperty("db.password"));
-//        return DriverManager.getConnection(props.getProperty("db.url"), props.getProperty("db.username"), props.getProperty("db.password"));
         } catch (IOException e) {
             e.printStackTrace();
             return null;
